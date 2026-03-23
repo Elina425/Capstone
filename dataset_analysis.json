@@ -1,0 +1,89 @@
+{
+  "timestamp": "Fri Mar 20 22:24:38 +04 2026\n",
+  "ohp": {
+    "exercise_type": "ohp",
+    "total_videos": 2367,
+    "error_statistics": {
+      "error_elbows": {
+        "videos_with_errors": 576,
+        "total_error_instances": 985,
+        "error_prevalence": 0.25486725663716814
+      },
+      "error_knees": {
+        "videos_with_errors": 777,
+        "total_error_instances": 915,
+        "error_prevalence": 0.3438053097345133
+      }
+    },
+    "split_distribution": {
+      "train": 1582,
+      "val": 339,
+      "test": 339
+    },
+    "data_integrity": {
+      "videos_not_in_splits": 107,
+      "split_videos_not_found": 0,
+      "missing_videos": [
+        "80894_4",
+        "63238_3",
+        "80917_12",
+        "72804_3",
+        "80906_7",
+        "72828_2",
+        "80924_1",
+        "72797_1",
+        "72813_3",
+        "72788_12"
+      ],
+      "extra_videos": [],
+      "split_overlaps": {
+        "train_test_overlap": 0,
+        "train_val_overlap": 0,
+        "val_test_overlap": 0
+      }
+    }
+  },
+  "squat": {
+    "exercise_type": "squat",
+    "total_videos": 1739,
+    "error_statistics": {
+      "error_knees_forward": {
+        "videos_with_errors": 1109,
+        "total_error_instances": 1183,
+        "error_prevalence": 0.6833025261860751
+      },
+      "error_knees_inward": {
+        "videos_with_errors": 232,
+        "total_error_instances": 262,
+        "error_prevalence": 0.14294516327788045
+      }
+    },
+    "split_distribution": {
+      "train": 1136,
+      "val": 243,
+      "test": 244
+    },
+    "data_integrity": {
+      "videos_not_in_splits": 116,
+      "split_videos_not_found": 0,
+      "missing_videos": [
+        "38096_1",
+        "50856_1",
+        "50862_1",
+        "50841_2",
+        "50844_1",
+        "38110_2",
+        "33933_2",
+        "33943_1",
+        "50828_3",
+        "38113_1"
+      ],
+      "extra_videos": [],
+      "split_overlaps": {
+        "train_test_overlap": 0,
+        "train_val_overlap": 0,
+        "val_test_overlap": 0
+      }
+    }
+  }
+}
