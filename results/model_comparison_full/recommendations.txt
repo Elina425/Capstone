@@ -9,4 +9,5 @@ NOTES:
 - Transformer models (ViTPose with DoRA) selected for state-of-the-art accuracy
 - MediaPipe recommended for edge deployment (fast inference)
 - YOLOv11 recommended for balanced speed/accuracy
+- MoveNet recommended for lightweight TensorFlow-based deployment
 ================================================================================

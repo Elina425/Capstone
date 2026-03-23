@@ -99,7 +99,7 @@ class PoseEstimator(ABC):
 
 
 class YOLOv11Pose(PoseEstimator):
-    """YOLO 11 Pose Estimation"""
+    """YOLO 11/8 Pose Estimation"""
     
     def __init__(self, model_size: str = "m", device: str = "cuda"):
         super().__init__("YOLOv11", device)
@@ -108,14 +108,22 @@ class YOLOv11Pose(PoseEstimator):
         self.load_model()
     
     def load_model(self):
-        """Load YOLOv11 pose model"""
+        """Load YOLO pose model (using v8 if v11 not available)"""
         try:
             from ultralytics import YOLO
-            model_name = f"yolov11{self.model_size}-pose.pt"
-            logger.info(f"Loading {model_name}...")
-            self.model = YOLO(model_name)
+            # Try YOLOv11 first, fallback to YOLOv8
+            try:
+                model_name = f"yolov11{self.model_size}-pose.pt"
+                logger.info(f"Loading {model_name}...")
+                self.model = YOLO(model_name)
+            except:
+                logger.warning("YOLOv11 not available, using YOLOv8")
+                model_name = f"yolov8{self.model_size}-pose.pt"
+                logger.info(f"Loading {model_name}...")
+                self.model = YOLO(model_name)
+            
             self.model.to(self.device)
-            logger.info("YOLOv11 model loaded successfully")
+            logger.info("YOLO model loaded successfully")
         except ImportError:
             logger.error("ultralytics not installed. Install with: pip install ultralytics")
             raise
@@ -174,6 +182,72 @@ class MediaPipeBlazePose(PoseEstimator):
                 return keypoints  # (33, 4)
         except Exception as e:
             logger.warning(f"Error in MediaPipe prediction: {e}")
+        return None
+
+
+class MoveNetPose(PoseEstimator):
+    """MoveNet - TensorFlow Hub pose estimation model"""
+    
+    def __init__(self, model_size: str = "lightning", device: str = "cpu"):
+        model_name = f"MoveNet-{model_size.capitalize()}"
+        super().__init__(model_name, device)
+        self.model_size = model_size
+        self.num_keypoints = 17  # COCO keypoints
+        self.load_model()
+    
+    def load_model(self):
+        """Load MoveNet model from TensorFlow Hub"""
+        try:
+            import tensorflow as tf
+            import tensorflow_hub as hub
+            
+            # Model URLs for different sizes
+            model_urls = {
+                "lightning": "https://tfhub.dev/google/movenet/singlepose/lightning/4",
+                "thunder": "https://tfhub.dev/google/movenet/singlepose/thunder/4"
+            }
+            
+            if self.model_size not in model_urls:
+                raise ValueError(f"Invalid model_size: {self.model_size}. Must be 'lightning' or 'thunder'")
+            
+            # Load model
+            self.model = hub.load(model_urls[self.model_size])
+            self.movenet = self.model.signatures['serving_default']
+            
+            logger.info(f"MoveNet {self.model_size} loaded successfully")
+        except ImportError as e:
+            logger.error(f"tensorflow or tensorflow-hub not installed. Install with: pip install tensorflow tensorflow-hub")
+            raise
+        except Exception as e:
+            logger.error(f"Error loading MoveNet: {e}")
+            raise
+    
+    def predict(self, frame: np.ndarray) -> Optional[np.ndarray]:
+        """Predict keypoints using MoveNet"""
+        try:
+            import tensorflow as tf
+            
+            # Resize to model input size
+            input_size = 192 if self.model_size == "lightning" else 256
+            input_image = tf.image.resize_with_pad(tf.expand_dims(frame, axis=0), input_size, input_size)
+            input_image = tf.cast(input_image, dtype=tf.int32)
+            
+            # Run model
+            outputs = self.movenet(input_image)
+            keypoints = outputs['output_0'].numpy()[0]
+            
+            # Convert to [x, y, confidence] format
+            # MoveNet outputs are normalized [0,1] coordinates
+            h, w = frame.shape[:2]
+            keypoints_xy = keypoints[:, :2] * [w, h]  # Denormalize
+            confidence = keypoints[:, 2:3]  # Confidence scores
+            
+            # Combine to [x, y, confidence]
+            keypoints_final = np.concatenate([keypoints_xy, confidence], axis=1)
+            
+            return keypoints_final  # (17, 3)
+        except Exception as e:
+            logger.warning(f"Error in MoveNet prediction: {e}")
         return None
 
 

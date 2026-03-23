@@ -12,7 +12,7 @@ from typing import List, Dict
 import numpy as np
 import pandas as pd
 
-from pose_estimators import YOLOv11Pose, MediaPipeBlazePose, ViTPose, ModelComparison
+from pose_estimators import YOLOv11Pose, MediaPipeBlazePose, ViTPose, MoveNetPose, ModelComparison
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -72,6 +72,7 @@ class ExerciseModelComparison:
             YOLOv11Pose(model_size="m", device=device),
             MediaPipeBlazePose(device=device),
             ViTPose(model_type="base", device=device, use_dora=True),
+            MoveNetPose(model_size="lightning", device=device),
         ]
         
         results = []
@@ -213,6 +214,7 @@ class ExerciseModelComparison:
         report += "- Transformer models (ViTPose with DoRA) selected for state-of-the-art accuracy\n"
         report += "- MediaPipe recommended for edge deployment (fast inference)\n"
         report += "- YOLOv11 recommended for balanced speed/accuracy\n"
+        report += "- MoveNet recommended for lightweight TensorFlow-based deployment\n"
         report += "="*80 + "\n"
         
         return report

@@ -6,9 +6,13 @@ scipy>=1.7.0
 
 # Pose Estimation Models
 ultralytics>=8.0.0      # YOLOv11
-# mediapipe>=0.8.0      # MediaPipe BlazePose (optional, commented out by default)
+mediapipe>=0.8.0        # MediaPipe BlazePose and MoveNet
 torch>=2.0.0            # PyTorch backend
 torchvision>=0.15.0     # Vision utilities
+
+# TensorFlow for MoveNet
+tensorflow>=2.8.0
+tensorflow-hub>=0.12.0
 
 # Transformer models
 # timm>=0.6.0           # ViTPose dependencies
